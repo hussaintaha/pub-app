@@ -1,0 +1,14 @@
+export const APPSUBSCRIPTIONCRAETEMUTATION = ` #graphql
+  mutation AppSubscriptionCreate($name: String!, $lineItems: [AppSubscriptionLineItemInput!]!, $returnUrl: URL!, $test: Boolean!) {
+    appSubscriptionCreate(name: $name, returnUrl: $returnUrl, lineItems: $lineItems, test: $test) {
+      userErrors {
+        field
+        message
+      }
+      appSubscription {
+        id
+        test
+      }
+      confirmationUrl
+    }
+  }`

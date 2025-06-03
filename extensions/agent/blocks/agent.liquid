@@ -1,0 +1,20 @@
+{% schema %}
+{
+  "name": "Cartia Ai Agent",
+  "target": "body",
+  "enabled_on": {
+    "templates": ["*"]
+  }
+}
+{% endschema %}
+
+{% style %}
+#AGENT_ROOT script, #AGENT_ROOT link {
+  display:  block !important;
+}
+{% endstyle %}
+
+<div id="AGENT_ROOT"></div>
+<script type="module" src="/apps/public/agents/index.js" defer></script>
+
+
