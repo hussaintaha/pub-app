@@ -3,7 +3,7 @@
 client_id = "3e732424b9fcd2551d29739a530aa0dc"
 name = "cartia"
 handle = "cartia"
-application_url = "https://forge-maldives-distinct-berkeley.trycloudflare.com"
+application_url = "https://occupational-internationally-naturally-household.trycloudflare.com"
 embedded = true
 
 [build]
@@ -23,19 +23,19 @@ api_version = "2025-04"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,read_themes"
+scopes = "read_themes,write_products"
 
 [auth]
 redirect_urls = [
-  "https://forge-maldives-distinct-berkeley.trycloudflare.com/auth/callback",
-  "https://forge-maldives-distinct-berkeley.trycloudflare.com/auth/shopify/callback",
-  "https://forge-maldives-distinct-berkeley.trycloudflare.com/api/auth/callback"
+  "https://occupational-internationally-naturally-household.trycloudflare.com/auth/callback",
+  "https://occupational-internationally-naturally-household.trycloudflare.com/auth/shopify/callback",
+  "https://occupational-internationally-naturally-household.trycloudflare.com/api/auth/callback"
 ]
+
+[app_proxy]
+url = "https://occupational-internationally-naturally-household.trycloudflare.com"
+subpath = "public"
+prefix = "apps"
 
 [pos]
 embedded = false
-
-[app_proxy]
-url = "https://forge-maldives-distinct-berkeley.trycloudflare.com"
-subpath = "public"
-prefix = "apps"

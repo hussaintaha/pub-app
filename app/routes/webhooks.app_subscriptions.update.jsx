@@ -25,8 +25,10 @@ const processWebhook = async({shop, payload})=>{
                 }
             }
         }
+        
     } catch (error) {
         console.log(`Subscription error ${at}`);
+
     }
 }
 

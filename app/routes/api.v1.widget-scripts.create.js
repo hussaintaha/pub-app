@@ -19,15 +19,22 @@ export const action = async ({ request }) => {
 
         if (injectMethod === "manual" && !script) return { status: 400, success: false, error: "Script is required for manual injection" };
 
+        const isExist = await Script.findOne({shop})
+
+        if (isExist) {
+            return { status: 400, success: false, error: "Widget script already exists for this shop" };
+        }
+
         if (injectMethod === "manual" && script) {
             const newScript = new Script({ script, shop });
             await newScript.save();
         } else if (injectMethod === "automatic") {
             // Corrected API call
-          const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/widget-api?shop_url=https://${encodeURIComponent(shop)}/`, {
+          const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/widget-api?shop_url=${encodeURIComponent(shop)}`, {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ',
         'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ'
     }
 });

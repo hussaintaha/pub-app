@@ -14,6 +14,7 @@ export const loader = async ({request}) => {
         const isScriptExists = await Script.findOne({ shop });
 
         if(!isScriptExists) return {status: 404, success: false, error: "Script not found"};
+        console.log('isScriptExists: ', isScriptExists);
 
         return { status: 200, success: true, script: isScriptExists?.script };
         

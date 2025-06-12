@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     watch: {},
     outDir: "../public/agents/",
+    emptyOutDir: true,
     input: "/src/main.jsx",
     rollupOptions: {
       output: {

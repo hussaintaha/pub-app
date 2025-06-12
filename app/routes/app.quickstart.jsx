@@ -1,7 +1,7 @@
 import { useState} from "react";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { Page } from "@shopify/polaris";
-import {  QuickstartStep, ScriptInject, ThemeSelect } from "../components";
+import {  ProductSyncStep, QuickstartStep, ScriptInject, ThemeSelect } from "../components";
 
 const QuickStart = () => {
     // State management
@@ -52,8 +52,21 @@ const QuickStart = () => {
 
             <QuickstartStep
               stepNumber={2}
-              title="Select Your Store Theme"
+              title="Index Products"
               isOpen={openStep === 2}
+              isFirstStep={false}
+              isLastStep={false}
+              onToggle={toggleStep}
+              onNext={handleNextStep}
+              onPrevious={handlePreviousStep}
+            >
+              <ProductSyncStep />
+            </QuickstartStep>
+
+            <QuickstartStep
+              stepNumber={3}
+              title="Select Your Store Theme"
+              isOpen={openStep === 3}
               isFirstStep={false}
               isLastStep={true}
               onToggle={toggleStep}
