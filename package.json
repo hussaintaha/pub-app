@@ -35,6 +35,7 @@
     "@shopify/shopify-app-remix": "^3.7.0",
     "@shopify/shopify-app-session-storage-mongodb": "^4.0.17",
     "@shopify/shopify-app-session-storage-prisma": "^6.0.0",
+    "d3-scale": "^4.0.2",
     "dotenv": "^16.5.0",
     "isbot": "^5.1.0",
     "lucide-react": "^0.511.0",
@@ -42,6 +43,8 @@
     "prisma": "^6.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-simple-maps": "^3.0.0",
+    "recharts": "^2.15.3",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "devDependencies": {
