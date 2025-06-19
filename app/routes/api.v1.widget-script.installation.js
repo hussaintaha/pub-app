@@ -1,19 +1,5 @@
 import { Script } from "../models";
 
-export const loader = async ({ request }) => {
-    if (request.method === "OPTIONS") {
-        return new Response(null, {
-            status: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, User-Agent, X-Environment, X-Discount-Type, X-Trigger-Type, X-Store-Domain, Authorization',
-            }
-        })
-    }
-    return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), { status: 405 })
-}
-
 export const action = async ({ request }) => {
   try {
     console.log("Webhook triggered: /api/v1/widget-script/installation");
