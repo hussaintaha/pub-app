@@ -1,5 +1,17 @@
 import mongoose from 'mongoose';
 
+function normalizeShopifyDomain(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname.toLowerCase();
+  } catch (err) {
+    return url
+      .replace(/^https?:\/\//, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+  }
+}
+
 const ActivitySchema = new mongoose.Schema({
   id: { type: String, required: true },
   timestamp: { type: Date, required: true },
@@ -22,6 +34,7 @@ const LiveActivitySchema = new mongoose.Schema({
     type: String,
     required: true,
     index: true,
+    set: normalizeShopifyDomain, 
     unique: true // One document per store
   },
 

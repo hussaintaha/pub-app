@@ -12,6 +12,21 @@ export const action = async ({ request }) => {
       return new Response(JSON.stringify({ success: false, error: "Missing required field: shopify_domain" }), { status: 400 });
     }
 
+    function normalizeShopifyDomain(url) {
+            try {
+                const parsedUrl = new URL(url);
+                return parsedUrl.hostname.toLowerCase();
+            } catch (err) {
+                return url
+                    .replace(/^https?:\/\//, '')
+                    .replace(/\/+$/, '')
+                    .toLowerCase();
+            }
+        }
+
+        const domain = normalizeShopifyDomain(data?.shopify_domain)
+        console.log('domain: ', domain);
+
     const {
       event_type,
       trigger_type,
@@ -23,7 +38,7 @@ export const action = async ({ request }) => {
     const flatData = {
       event_type,
       trigger_type,
-      shopify_domain,
+      shopify_domain:domain,
       timestamp,
 
       all_count: live_activity_feed.summary?.all_count,
