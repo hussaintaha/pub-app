@@ -12,28 +12,27 @@ export const action = async ({ request }) => {
         function normalizeShopifyDomain(url) {
             try {
                 const parsedUrl = new URL(url);
-                return parsedUrl.hostname.toLowerCase(); 
+                return parsedUrl.hostname.toLowerCase();
             } catch (err) {
                 return url
-                    .replace(/^https?:\/\//, '')  
-                    .replace(/\/+$/, '')          
-                    .toLowerCase();               
+                    .replace(/^https?:\/\//, '')
+                    .replace(/\/+$/, '')
+                    .toLowerCase();
             }
         }
 
-        console.log('data?.shopify_domain: ', data?.shopify_domain);
         const domain = normalizeShopifyDomain(data?.shopify_domain)
         console.log('domain: ', domain);
 
         const updatedAnalytics = await AnalyticsUpdate.findOneAndUpdate(
-            { shopify_domain: domain},
-            { $set: data },
+            { shopify_domain: domain },
+            { $set: { ...data, shopify_domain: domain } },
             {
                 upsert: true,
                 new: true,
             }
         );
-        console.log('updatedAnalytics: ', JSON.stringify(updatedAnalytics,null,2));
+        console.log('updatedAnalytics: ', JSON.stringify(updatedAnalytics, null, 2));
 
         if (!updatedAnalytics) return new Response(JSON.stringify({ success: false, message: "Something went wrong" }), { status: 500 })
 
