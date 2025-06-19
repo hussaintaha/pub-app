@@ -69,18 +69,6 @@ export const action = async ({ request }) => {
 
       console.log(`Existing script updated...`);
 
-      const productSyncResponse = await fetch(`${process.env.SHOPIFY_APP_URL||"https://nodea.amkwebsolutions.com"}/api/v1/lovable/sync-products`, {method:'GET'})
-
-      const data = await productSyncResponse.json()
-
-      const {success, error, message} = data
-
-      if(!success && !message && error){
-        console.log(`Error occured in product syncing while widget setup: ${error}`);
-      }else if(success && message && !error){
-        console.log(`Product sync completed while widget setup.`);
-      }
-
       return {
         status: 200,
         success: true,
