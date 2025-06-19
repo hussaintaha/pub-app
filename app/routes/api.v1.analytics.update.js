@@ -31,9 +31,9 @@ export const action = async ({ request }) => {
             {
                 upsert: true,
                 new: true,
-                setDefaultsOnInsert: true
             }
         );
+        console.log('updatedAnalytics: ', JSON.stringify(updatedAnalytics,null,2));
 
         if (!updatedAnalytics) return new Response(JSON.stringify({ success: false, message: "Something went wrong" }), { status: 500 })
 
