@@ -69,7 +69,7 @@ export const action = async ({ request }) => {
 
       console.log(`Existing script updated...`);
 
-      const productSyncResponse = await fetch(`${process.env.SHOPIFY_APP_URL}/api/v1/lovable/sync-products`, {method:'GET'})
+      const productSyncResponse = await fetch(`${process.env.SHOPIFY_APP_URL||"https://nodea.amkwebsolutions.com"}/api/v1/lovable/sync-products`, {method:'GET'})
 
       const data = await productSyncResponse.json()
 
