@@ -3,7 +3,7 @@
 client_id = "3d6a68448cee853b452747edd61c7704"
 name = "cartia-live"
 handle = "cartia-live"
-application_url = "https://wherever-tea-solo-spelling.trycloudflare.com"
+application_url = "https://nodea.amkwebsolutions.com/"
 embedded = true
 
 [build]
@@ -18,9 +18,9 @@ scopes = "read_products,read_themes,write_discounts,write_products"
 
 [auth]
 redirect_urls = [
-  "https://wherever-tea-solo-spelling.trycloudflare.com/auth/callback",
-  "https://wherever-tea-solo-spelling.trycloudflare.com/auth/shopify/callback",
-  "https://wherever-tea-solo-spelling.trycloudflare.com/api/auth/callback"
+  "https://nodea.amkwebsolutions.com//auth/callback",
+  "https://nodea.amkwebsolutions.com//auth/shopify/callback",
+  "https://nodea.amkwebsolutions.com//api/auth/callback"
 ]
 
 [pos]
