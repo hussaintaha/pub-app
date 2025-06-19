@@ -1,50 +1,53 @@
 import { Script } from "../models";
 
-export const loader = async ({ request }) => {
-    if (request.method === "OPTIONS") {
-        return new Response(null, {
-            status: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, User-Agent, X-Environment, X-Discount-Type, X-Trigger-Type, X-Store-Domain, Authorization',
-            }
-        })
-    }
-    return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), { status: 405 })
-}
-
 export const action = async ({ request }) => {
-  try {
-    console.log("Webhook triggered: /api/v1/widget-script/installation");
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers":
+          "Content-Type, User-Agent, X-Environment, X-Discount-Type, X-Trigger-Type, X-Store-Domain, Authorization",
+      },
+    });
+  }
 
-    if (request.method !== "POST") {
-      return new Response(JSON.stringify({
+  if (request.method !== "POST") {
+    return new Response(
+      JSON.stringify({
         success: false,
         error: "Method not allowed.",
-      }), {
+      }),
+      {
         status: 405,
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
-      });
-    }
+      }
+    );
+  }
+
+  try {
+    console.log("Webhook triggered: /api/v1/widget-script/installation");
 
     const { shopify_domain, widget_script } = await request.json();
-    console.log("shopify_domain, widget_script:", shopify_domain, widget_script);
 
     if (!shopify_domain || !widget_script) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: "Shopify domain or widget script is missing.",
-      }), {
-        status: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Shopify domain or widget script is missing.",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
 
     const normalizeDomain = (domain, keepWWW = false) => {
@@ -66,42 +69,22 @@ export const action = async ({ request }) => {
       }).save();
 
       console.log("New script injected");
-      return new Response(JSON.stringify({
-        success: true,
-        message: "Widget injected successfully.",
-      }), {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      });
+    } else {
+      await Script.findOneAndUpdate(
+        { shop: normalizedShop },
+        { $set: { script: widget_script } },
+        { new: true }
+      ).lean();
+
+      console.log("Existing script updated");
     }
 
-    const updatedScript = await Script.findOneAndUpdate(
-      { shop: normalizedShop },
-      { $set: { script: widget_script } },
-      { new: true }
-    ).lean();
-
-    if (!updatedScript) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: "Script not found.",
-      }), {
-        status: 404,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      });
-    }
-
-    console.log("Existing script updated");
-
-    const syncRes = await fetch(`${process.env.SHOPIFY_APP_URL}/api/v1/lovable/sync-products`, {
-      method: "GET",
-    });
+    const syncRes = await fetch(
+      `${process.env.SHOPIFY_APP_URL}/api/v1/lovable/sync-products`,
+      {
+        method: "GET",
+      }
+    );
 
     const syncData = await syncRes.json();
     const { success, error, message } = syncData;
@@ -112,29 +95,34 @@ export const action = async ({ request }) => {
       console.log("Sync success:", message);
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      message: "Widget updated successfully.",
-    }), {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    });
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Widget processed successfully.",
+      }),
+      {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
     console.error("Unhandled error:", error);
 
-    return new Response(JSON.stringify({
-      success: false,
-      error: "Internal server error.",
-    }), {
-      status: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-    });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Internal server error.",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 };
