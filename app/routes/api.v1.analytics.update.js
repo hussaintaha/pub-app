@@ -21,7 +21,9 @@ export const action = async ({ request }) => {
             }
         }
 
+        console.log('data?.shopify_domain: ', data?.shopify_domain);
         const domain = normalizeShopifyDomain(data?.shopify_domain)
+        console.log('domain: ', domain);
 
         const updatedAnalytics = await AnalyticsUpdate.findOneAndUpdate(
             { shopify_domain: domain},
