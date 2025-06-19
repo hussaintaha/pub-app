@@ -14,7 +14,6 @@ export const loader = async({request})=>{
         if(!shopify_domain) return new Response(JSON.stringify({success: false, error:'Forbidden error'}), {status: 403})
 
         const analytics = await AnalyticsUpdate.findOne({shopify_domain})
-        console.log('analytics: ', analytics);
 
         if(!analytics) return new Response(JSON.stringify({success: false, error:'Analytics not found.'}), {status: 404})
 

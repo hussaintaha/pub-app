@@ -14,8 +14,7 @@ export const loader = async({request})=>{
         if(!shopify_domain) return new Response(JSON.stringify({success: false, error:'Forbidden error'}), {status: 403})
 
         const activity = await Activity.findOne({shopify_domain})
-        console.log('activity: ', activity);
-
+ 
         if(!activity) return new Response(JSON.stringify({success: false, error:'activity not found.'}), {status: 404})
 
         return new Response(JSON.stringify({success: true, activity}), {status: 200})

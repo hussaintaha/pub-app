@@ -1,9 +1,9 @@
 import { authenticate } from "../shopify.server";
 import { Script } from "../models";
 
-export const action = async ({ request}) => {
+export const action = async ({ request }) => {
     try {
-        if(request.method !== "PATCH") return { status: 405, success: false, error: "Method Not Allowed" };
+        if (request.method !== "PATCH") return { status: 405, success: false, error: "Method Not Allowed" };
 
         const { session } = await authenticate.admin(request);
 
@@ -21,13 +21,13 @@ export const action = async ({ request}) => {
             await Script.findOneAndUpdate({ shop }, { script }, { upsert: true, new: true });
         } else if (injectMethod === "automatic") {
             // In your Shopify app action
-const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/api/widget/script?shop_url=${encodeURIComponent(shop)}`, {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ'
-    }
-});
+            const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/api/widget/script?shop_url=${encodeURIComponent(shop)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ'
+                }
+            });
 
 
 
@@ -52,6 +52,6 @@ const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions
         }
 
         return { status: 500, success: false, error: "Internal Server Error" };
-        
+
     }
 }

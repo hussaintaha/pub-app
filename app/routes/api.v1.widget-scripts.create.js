@@ -19,7 +19,7 @@ export const action = async ({ request }) => {
 
         if (injectMethod === "manual" && !script) return { status: 400, success: false, error: "Script is required for manual injection" };
 
-        const isExist = await Script.findOne({shop})
+        const isExist = await Script.findOne({ shop })
 
         if (isExist) {
             return { status: 400, success: false, error: "Widget script already exists for this shop" };
@@ -30,19 +30,19 @@ export const action = async ({ request }) => {
             await newScript.save();
         } else if (injectMethod === "automatic") {
             // Corrected API call
-          const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/widget-api?shop_url=${encodeURIComponent(shop)}`, {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ'
-    }
-});
+            const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/widget-api?shop_url=${encodeURIComponent(shop)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3eG52c2hyZm9wZ2JwdWVhZnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5OTI4MDgsImV4cCI6MjA2MjU2ODgwOH0.p9ZURKfzS6jOO_KNXc9sZF5kjpfPVS0ZhGQhMRAPQPQ'
+                }
+            });
 
 
             const data = await response.json();
             console.log('Widget API Response:', data);
-            
+
             if (!response.ok) {
                 console.error('Widget API Error:', data);
                 throw new Error(data.error || data.message || "Failed to fetch widget script");
@@ -50,8 +50,8 @@ export const action = async ({ request }) => {
 
             // Optional: Save the returned script to your database
             if (data.widget_script) {
-                const newScript = new Script({ 
-                    script: data.widget_script, 
+                const newScript = new Script({
+                    script: data.widget_script,
                     shop,
                     config: data.config || {}
                 });

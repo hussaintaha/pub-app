@@ -1,6 +1,6 @@
 import { authenticate } from "../shopify.server";
 import {ProductSyncStatus} from "../models";
-import {syncProductsInBackground} from '../helpers'
+import {syncCollectionHelper, syncProductsInBackground} from '../helpers'
 
 export const loader = async ({ request }) => {
   console.log('Product syncing in progress...');
@@ -39,6 +39,8 @@ export const loader = async ({ request }) => {
       { upsert: true, new: true }
     );
 
+    syncCollectionHelper(admin, shop)
+
     syncProductsInBackground(admin, shop).catch(error => {
       console.error(`Background sync error: ${error.message}`);
       ProductSyncStatus.findOneAndUpdate(
@@ -49,6 +51,8 @@ export const loader = async ({ request }) => {
         }
       ).catch(console.error);
     });
+
+    
 
     return new Response(
       JSON.stringify({

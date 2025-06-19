@@ -22,9 +22,9 @@ const AnalyticsUpdateSchema = new mongoose.Schema({
           device: String,
           session_duration: Number,
           product_category: String,
-          issue_category: String
-        }
-      }
+          issue_category: String,
+        },
+      },
     ],
     trends: {
       conversations_by_day: { type: Map, of: Number },
@@ -33,32 +33,33 @@ const AnalyticsUpdateSchema = new mongoose.Schema({
         {
           intent: String,
           count: Number,
-          percentage: Number
-        }
+          percentage: Number,
+        },
       ],
       user_satisfaction: {
         positive: Number,
         neutral: Number,
-        negative: Number
-      }
+        negative: Number,
+      },
     },
     geographic_data: [
       {
         country: String,
         conversations: Number,
-        conversion_rate: Number
-      }
+        conversion_rate: Number,
+      },
     ],
     performance: {
       uptime_percentage: Number,
       error_rate: Number,
       peak_usage_hour: String,
-      avg_concurrent_chats: Number
-    }
-  }
+      avg_concurrent_chats: Number,
+    },
+  },
 });
 
-const AnalyticsUpdate = mongoose.models.AnalyticsUpdate || mongoose.model('AnalyticsUpdate', AnalyticsUpdateSchema)
+const AnalyticsUpdate =
+  mongoose.models.AnalyticsUpdate ||
+  mongoose.model("AnalyticsUpdate", AnalyticsUpdateSchema);
 
-export default AnalyticsUpdate
-
+export default AnalyticsUpdate;
