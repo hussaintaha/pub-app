@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+const RecentActivity = new mongoose.Schema({
+  timestamp: { type: Date },
+  type: { type: String },
+  customer_info: {
+    location: String,
+    device: String,
+    session_duration: Number,
+    product_category: String,
+    issue_category: String,
+  }
+})
+
 const AnalyticsUpdateSchema = new mongoose.Schema({
   event_type: { type: String, required: true },
   trigger_type: { type: String, required: true },
@@ -13,19 +25,7 @@ const AnalyticsUpdateSchema = new mongoose.Schema({
     response_time_avg: Number,
     escalation_rate: Number,
     unique_visitors: Number,
-    recent_activity: [
-      {
-        timestamp: Date,
-        type: String,
-        customer_info: {
-          location: String,
-          device: String,
-          session_duration: Number,
-          product_category: String,
-          issue_category: String,
-        },
-      },
-    ],
+    recent_activity: { type: [RecentActivity] },
     trends: {
       conversations_by_day: { type: Map, of: Number },
       messages_by_hour: { type: Map, of: Number },
