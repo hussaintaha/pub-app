@@ -1,6 +1,18 @@
 import mongoose from "mongoose";
 
-const RecentActivity = new mongoose.Schema({
+function normalizeShopifyDomain(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname.toLowerCase();
+  } catch (err) {
+    return url
+      .replace(/^https?:\/\//, '')
+      .replace(/\/+$/, '')
+      .toLowerCase();
+  }
+}
+
+const RecentActivitySchema = new mongoose.Schema({
   timestamp: { type: Date },
   type: { type: String },
   customer_info: {
@@ -9,13 +21,17 @@ const RecentActivity = new mongoose.Schema({
     session_duration: Number,
     product_category: String,
     issue_category: String,
-  }
-})
+  },
+}, { _id: false }); 
 
 const AnalyticsUpdateSchema = new mongoose.Schema({
   event_type: { type: String, required: true },
   trigger_type: { type: String, required: true },
-  shopify_domain: { type: String, required: true },
+  shopify_domain: {
+    type: String,
+    required: true,
+    set: normalizeShopifyDomain, 
+  },
   webhook_url: { type: String, required: true },
   timestamp: { type: Date, required: true },
   analytics: {
@@ -25,7 +41,7 @@ const AnalyticsUpdateSchema = new mongoose.Schema({
     response_time_avg: Number,
     escalation_rate: Number,
     unique_visitors: Number,
-    recent_activity: { type: [RecentActivity] },
+    recent_activity: [RecentActivitySchema],
     trends: {
       conversations_by_day: { type: Map, of: Number },
       messages_by_hour: { type: Map, of: Number },
