@@ -9,8 +9,22 @@ export const action = async ({ request }) => {
 
         if (!data?.shopify_domain) return new Response(JSON.stringify({ success: false, error: 'Missing required field: shopify_domain' }), { status: 400 })
 
+        function normalizeShopifyDomain(url) {
+            try {
+                const parsedUrl = new URL(url);
+                return parsedUrl.hostname.toLowerCase(); 
+            } catch (err) {
+                return url
+                    .replace(/^https?:\/\//, '')  
+                    .replace(/\/+$/, '')          
+                    .toLowerCase();               
+            }
+        }
+
+        const domain = normalizeShopifyDomain(data?.shopify_domain)
+
         const updatedAnalytics = await AnalyticsUpdate.findOneAndUpdate(
-            { shopify_domain: data.shopify_domain },
+            { shopify_domain: domain},
             { $set: data },
             {
                 upsert: true,
@@ -19,7 +33,7 @@ export const action = async ({ request }) => {
             }
         );
 
-        if(!updatedAnalytics ) return new Response(JSON.stringify({ success: false, message: "Something went wrong"}), { status: 500 })
+        if (!updatedAnalytics) return new Response(JSON.stringify({ success: false, message: "Something went wrong" }), { status: 500 })
 
         return new Response(JSON.stringify({ success: true, message: "", data }), { status: 200 })
 
