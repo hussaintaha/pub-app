@@ -17,6 +17,7 @@ export const action = async ({ request }) => {
     console.log(`Received ${topic} webhook for ${shop}`);
 
     const subscription = await Subscription.findOne({ shop });
+    console.log('subscription: ', subscription);
 
     if (!subscription || subscription?.status === "INACTIVE" ) {
       await Activity.findOneAndDelete({ shop });
