@@ -1,7 +1,13 @@
 // Subscription update webhook route
 
 import { authenticate } from "../shopify.server";
-import { Activity, AnalyticsUpdate, ProductSyncStatus, Script, Subscription } from "../models";
+import {
+  Activity,
+  AnalyticsUpdate,
+  ProductSyncStatus,
+  Script,
+  Subscription,
+} from "../models";
 
 const at = "webhook.app_subscriptions.update.jsx";
 
@@ -40,6 +46,21 @@ const processWebhook = async ({ shop, payload }) => {
           await AnalyticsUpdate.findOneAndDelete({ shopify_domain: shop });
           await ProductSyncStatus.findOneAndDelete({ shop });
           await Script.findOneAndDelete({ shop });
+
+          const response = await fetch(
+            `${process.env.SHOPIFY_APP_URL}/api/v1/unsync-product`,
+            { method: "GET" },
+          );
+
+          const data = await response.json();
+
+          const { success, message, error } = data;
+
+          if (success && message && !error) {
+            console.log(message);
+          }else if(!success && !message && error){
+            console.log(error,'Unsync prod');
+          }
         }
       }
     }

@@ -11,12 +11,8 @@ import {
   Subscription,
 } from "../models";
 
-export const action = async ({ request }) => {
-  try {
-    const { shop, topic } = await authenticate.webhook(request);
-    console.log(`Received ${topic} webhook for ${shop}`);
-
-    const subscription = await Subscription.findOne({ shop });
+const cleanup = async({shop})=>{
+ const subscription = await Subscription.findOne({ shop });
     console.log('subscription: ', subscription);
 
     if (!subscription || subscription?.status === "INACTIVE" ) {
@@ -25,9 +21,27 @@ export const action = async ({ request }) => {
       await ProductSyncStatus.findOneAndDelete({ shop });
       await Script.findOneAndDelete({ shop });
       await Subscription.findOneAndDelete({shop})
+
+      const response = await fetch(`https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/app-uninstall-cleanup`,{method:'POST', body: JSON.stringify({shop})})
+      const data = await response.json()
+
+      const {success, message} = data
+
+      if(success && message){
+        console.log(message);
+      }
+
     }
 
     await ShopifySession.findOneAndDelete({ shop });
+}
+
+export const action = async ({ request }) => {
+  try {
+    const { shop, topic } = await authenticate.webhook(request);
+    console.log(`Received ${topic} webhook for ${shop}`);
+
+   cleanup()
 
     return new Response(null, { status: 200 });
   } catch (err) {
