@@ -48,7 +48,7 @@ const processWebhook = async ({ shop, payload }) => {
           await Script.findOneAndDelete({ shop });
 
           const response = await fetch(
-            `${process.env.SHOPIFY_APP_URL}/api/v1/unsync-product`,
+            `${process.env.SHOPIFY_APP_URL}api/v1/unsync-product`,
             { method: "GET" },
           );
 
