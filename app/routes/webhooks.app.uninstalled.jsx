@@ -20,8 +20,8 @@ export const action = async ({ request }) => {
     console.log('subscription: ', subscription);
 
     if (!subscription || subscription?.status === "INACTIVE" ) {
-      await Activity.findOneAndDelete({ shop });
-      await AnalyticsUpdate.findOneAndDelete({ shop });
+      await Activity.findOneAndDelete({shopify_domain: shop });
+      await AnalyticsUpdate.findOneAndDelete({shopify_domain: shop });
       await ProductSyncStatus.findOneAndDelete({ shop });
       await Script.findOneAndDelete({ shop });
       await Subscription.findOneAndDelete({shop})
