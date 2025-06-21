@@ -49,7 +49,7 @@ const processWebhook = async ({ shop, payload }) => {
 
           const response = await fetch(
             `https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/app-uninstall-cleanup`,
-            { method: "POST", body: JSON.stringify({ shop }) },
+            { method: "POST", body: JSON.stringify({ domain: shop}) },
           );
           const data = await response.json();
           console.log("data: ", data);
