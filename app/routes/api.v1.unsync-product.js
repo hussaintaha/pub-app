@@ -21,7 +21,7 @@ export const action = async ({ request }) => {
             console.log(message);
         }
 
-        return new Response(JSON.stringify({success: true, message:"Unsync all products and collections"}))
+        return new Response(JSON.stringify({success: true, message:"Unsync all products and collections"}),{status: 200})
 
     } catch (error) {
         if (error instanceof Error) {
