@@ -42,7 +42,7 @@ export const action = async ({ request }) => {
     const { shop, topic } = await authenticate.webhook(request);
     console.log(`Received ${topic} webhook for ${shop}`);
 
-   cleanup()
+   cleanup({shop})
 
     return new Response(null, { status: 200 });
   } catch (err) {
