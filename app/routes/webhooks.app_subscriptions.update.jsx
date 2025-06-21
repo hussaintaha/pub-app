@@ -48,18 +48,18 @@ const processWebhook = async ({ shop, payload }) => {
           await Script.findOneAndDelete({ shop });
 
           const response = await fetch(
-            `${process.env.SHOPIFY_APP_URL}api/v1/unsync-product`,
-            { method: "GET" },
+            `https://iwxnvshrfopgbpueafye.supabase.co/functions/v1/app-uninstall-cleanup`,
+            { method: "POST", body: JSON.stringify({ shop }) },
           );
-
           const data = await response.json();
+          console.log("data: ", data);
 
-          const { success, message, error } = data;
+          const { success, message } = data;
 
-          if (success && message && !error) {
+          if (success && message) {
             console.log(message);
-          }else if(!success && !message && error){
-            console.log(error,'Unsync prod');
+          } else {
+            console.log("error");
           }
         }
       }
