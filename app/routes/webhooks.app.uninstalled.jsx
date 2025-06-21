@@ -37,6 +37,7 @@ const cleanup = async({shop})=>{
 }
 
 export const action = async ({ request }) => {
+  console.log('request: ', request);
   try {
     const { shop, topic } = await authenticate.webhook(request);
     console.log(`Received ${topic} webhook for ${shop}`);
