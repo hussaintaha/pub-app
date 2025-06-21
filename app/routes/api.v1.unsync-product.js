@@ -5,6 +5,8 @@ export const loader = async ({ request }) => {
     try {
         if (request.method !== "GET") return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), { status: 405 })
 
+         console.log(`unsync.....2`);
+
         const { session } = await authenticate.admin(request)
         console.log('session: ', session);
 
