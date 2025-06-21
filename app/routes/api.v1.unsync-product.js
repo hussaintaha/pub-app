@@ -1,6 +1,7 @@
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
+    console.log(`unsync.....`);
     try {
         if (request.method !== "GET") return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), { status: 405 })
 
