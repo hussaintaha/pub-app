@@ -29,5 +29,7 @@ export const action = async ({ request }) => {
         } else {
             console.log('An unknown error occurred.');
         }
+
+        return new Response(JSON.stringify({success: false, error:"Internal server error."}),{status: 500})
     }
 }
