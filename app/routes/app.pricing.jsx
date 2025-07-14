@@ -26,7 +26,6 @@ export const action = async ({ request }) => {
       await billing.request({
         plan: planName,
         isTest: true,
-        returnUrl: process.env.SHOPIFY_APP_URL,
       }),
   });
 };
@@ -82,15 +81,15 @@ const Subscription = () => {
 
   const handleSubscription = (plan) => {
 
-    if(plan){
-      const planToBeSubscribe = plans.filter(e=> e.planName === plan)[0]
+    if (plan) {
+      const planToBeSubscribe = plans.filter(e => e.planName === plan)[0]
       const formData = new FormData();
       formData.append("planName", planToBeSubscribe.planName);
       formData.append("amount", planToBeSubscribe.price);
       formData.append("isCancel", false);
       submit(formData, { method: "POST" });
-    }else{
-      shopify.toast.show("Please select a plan.", {duration: 5000, isError:true})
+    } else {
+      shopify.toast.show("Please select a plan.", { duration: 5000, isError: true })
     }
   };
 
@@ -117,17 +116,17 @@ const Subscription = () => {
           )}
 
           <InlineGrid
-          columns={{
-            xs: "1fr",
-            md:`repeat(${plans.length}, 1fr)`,
-            lg: `repeat(${Math.min(plans.length, 4)}, 1fr)`,
-          }}
-          gap={{ xs: "400", md: "200" }}
-        >
-          {
-            plans.map((plan, index)=><PricingCard key={`plan-${index}`} planName={plan.planName} activePlan={activeSubscriptionsData?.name} price={plan.price} features={plan.features} handleSubscription={handleSubscription} />)
-          }
-        </InlineGrid>
+            columns={{
+              xs: "1fr",
+              md: `repeat(${plans.length}, 1fr)`,
+              lg: `repeat(${Math.min(plans.length, 4)}, 1fr)`,
+            }}
+            gap={{ xs: "400", md: "200" }}
+          >
+            {
+              plans.map((plan, index) => <PricingCard key={`plan-${index}`} planName={plan.planName} activePlan={activeSubscriptionsData?.name} price={plan.price} features={plan.features} handleSubscription={handleSubscription} />)
+            }
+          </InlineGrid>
         </BlockStack>
       </Page>
     </>
