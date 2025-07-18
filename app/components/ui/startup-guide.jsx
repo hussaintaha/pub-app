@@ -10,7 +10,7 @@ import {
 } from "@shopify/polaris";
 import { CreditCard, Rocket } from "lucide-react";
 
-const StartupGuide = ({ hasActiveSubscription }) => {
+const StartupGuide = () => {
   return (
     <>
       <Card>
@@ -38,8 +38,7 @@ const StartupGuide = ({ hasActiveSubscription }) => {
             <p>
               For accurate AI analysis and personalized recommendations, make
               sure to index all your products in{" "}
-              <strong>Quick Startup - Step 2</strong> inside the Cartia
-              dashboard.
+              <strong>Quick Startup - Step 2</strong> inside the quickstart
             </p>
           </Banner>
         </TextContainer>
@@ -62,29 +61,6 @@ const StartupGuide = ({ hasActiveSubscription }) => {
               </InlineStack>
               <Button variant="primary" url="/app/quickstart">
                 Quickstart
-              </Button>
-            </InlineStack>
-            <Divider />
-
-            {/* subscription management */}
-            <InlineStack gap="300" align="space-between" blockAlign="center">
-              <InlineStack gap="300" blockAlign="center">
-                <CreditCard size={20} color="#008060" />
-                <BlockStack gap="100">
-                  <Text variant="headingMd" as="h2">
-                    {hasActiveSubscription
-                      ? "Manage subscription"
-                      : "Get started with a plan"}
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    {hasActiveSubscription
-                      ? "View or upgrade your current plan and subscription details"
-                      : "Choose a plan that fits your business needs"}
-                  </Text>
-                </BlockStack>
-              </InlineStack>
-              <Button url="/app/pricing">
-                {hasActiveSubscription ? "View plan" : "Get started"}
               </Button>
             </InlineStack>
           </BlockStack>

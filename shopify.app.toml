@@ -3,12 +3,11 @@
 client_id = "3e732424b9fcd2551d29739a530aa0dc"
 name = "cartia"
 handle = "cartia"
-application_url = "https://buyer-protest-films-strip.trycloudflare.com"
+application_url = "https://influenced-kidney-directive-less.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2025-04"
@@ -19,13 +18,13 @@ scopes = "read_products,read_themes,write_discounts,write_products"
 
 [auth]
 redirect_urls = [
-  "https://buyer-protest-films-strip.trycloudflare.com/auth/callback",
-  "https://buyer-protest-films-strip.trycloudflare.com/auth/shopify/callback",
-  "https://buyer-protest-films-strip.trycloudflare.com/api/auth/callback"
+  "https://influenced-kidney-directive-less.trycloudflare.com/auth/callback",
+  "https://influenced-kidney-directive-less.trycloudflare.com/auth/shopify/callback",
+  "https://influenced-kidney-directive-less.trycloudflare.com/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://buyer-protest-films-strip.trycloudflare.com"
+url = "https://influenced-kidney-directive-less.trycloudflare.com"
 subpath = "public"
 prefix = "apps"
 

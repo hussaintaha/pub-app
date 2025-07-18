@@ -12,14 +12,13 @@ export const loader = async ({ request }) => {
 };
 
 export default function Index() {
-  const { hasActiveSubscription } = useOutletContext();
 
   return (
     <Page>
       <TitleBar title="Dashboard"></TitleBar>
       <Layout>
         <Layout.Section>
-          <StartupGuide hasActiveSubscription={hasActiveSubscription} />
+          <StartupGuide />
           <Activity />
         </Layout.Section>
       </Layout>

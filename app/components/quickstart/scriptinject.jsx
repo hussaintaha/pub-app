@@ -127,7 +127,7 @@ const ScriptInject = () => {
         </Banner>
       </TextContainer>
 
-      <div style={{ marginTop: "16px" }}>
+      <div style={{ marginTop: "16px", height:"250px",overflowY:'auto' }}>
         <Card background="bg-surface-secondary">
           <Form onSubmit={handleSubmit}>
             <FormLayout>

@@ -4,7 +4,6 @@ import { Page } from "@shopify/polaris";
 import {  ProductSyncStep, QuickstartStep, ScriptInject, ThemeSelect } from "../components";
 
 const QuickStart = () => {
-    // State management
   const [openStep, setOpenStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState([false,false,false,]);
 

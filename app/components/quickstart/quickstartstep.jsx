@@ -20,6 +20,7 @@ const QuickstartStep = ({
   onNext,
   onPrevious,
   showFinishInsteadOfNext = false,
+  setupCompleted
 }) => {
   return (
     <>
@@ -63,7 +64,7 @@ const QuickstartStep = ({
                     </Button>
                   )}
                   {isLastStep ? (
-                    <Button variant="primary" url="/app">
+                    <Button variant="primary" url={setupCompleted ? "/app" :"" }>
                       Finish
                     </Button>
                   ) : (

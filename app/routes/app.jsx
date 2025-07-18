@@ -3,9 +3,7 @@ import {
   Outlet,
   useLoaderData,
   useRouteError,
-  useNavigate,
   useNavigation,
-  useLocation,
 } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
@@ -14,6 +12,7 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import { useCallback, useEffect, useState } from "react";
 import { Frame, Loading } from "@shopify/polaris";
+import { RedirectionComponent } from "../components";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -25,25 +24,29 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   const { apiKey } = useLoaderData();
-  const [subscriptionData, setSubscriptionData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [setupStatus, setSetupStatus] = useState(false);
   const navigation = useNavigation();
-  const location = useLocation();
   const isLoading = navigation.state !== "idle";
 
-  const fetchActiveSubscription = useCallback(async () => {
-    try {
-      const response = await fetch("/api/v1/subscriptions", { method: "GET" });
-      const data = await response.json();
-      const { success, data: resData, error } = data;
+ 
 
-      if (success && resData) {
-        setSubscriptionData(resData);
-        setLoading(false);
-      } else if (!success && !resData && error) {
-        setLoading(false);
-        shopify.toast.show(error, { duration: 5000, isError: true });
+  const loadingStyles = {
+    opacity: isLoading ? 0.6 : 1,
+    transition: "opacity 0.2s ease-in-out",
+  };
+
+  const fetchAgentSetupStatus = useCallback(async () => {
+    try {
+      const response = await fetch("/api/v1/agent-setup-check", {
+        method: "GET",
+      });
+      const data = await response.json();
+      const { error, success, setupCompleted } = data;
+
+      if (error && !success) {
+        shopify.toast.show(error, { isError: true });
+      } else {
+        setSetupStatus(setupCompleted);
       }
     } catch (error) {
       console.log(error);
@@ -51,33 +54,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    fetchActiveSubscription();
-  }, [fetchActiveSubscription]);
+    fetchAgentSetupStatus();
+  }, [fetchAgentSetupStatus]);
 
-  const { activeSubscriptionsData, subscriptionDataFromDB: subscription } = subscriptionData || {};
-
-  const hasActiveSubscription =
-    activeSubscriptionsData?.status === "ACTIVE" &&
-    subscription?.status === "ACTIVE";
-
-  // Redirect to pricing page if no active subscription
-  useEffect(() => {
-    if (!loading && !hasActiveSubscription && location.pathname !== "/app/pricing") {
-      navigate("/app/pricing", { replace: true });
-    }
-  }, [hasActiveSubscription, loading, location.pathname, navigate]);
-
-  const loadingStyles = {
-    opacity: isLoading ? 0.6 : 1,
-    transition: "opacity 0.2s ease-in-out",
-  };
-
-  const context = {
-    hasActiveSubscription,
-    planName: subscription?.planName,
-    loading,
-    activeSubscriptionsData,
-  };
+  console.log("setupStatus", setupStatus);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
@@ -87,12 +67,19 @@ export default function App() {
           <Link to="/app" rel="home">
             Home
           </Link>
-          <Link to="/app/analytics">Analytics</Link>
-          <Link to="/app/quickstart">Quickstart</Link>
-          <Link to="/app/pricing">Pricing</Link>
+          {setupStatus && (
+            <>
+              <Link to="/app/analytics">Analytics</Link>
+              <Link to="/app/quickstart">Quickstart</Link>
+            </>
+          )}
         </NavMenu>
         <div style={loadingStyles}>
-          <Outlet context={{ ...context }} />
+          {setupStatus ? (
+            <Outlet />
+          ) : (
+            <RedirectionComponent />
+          )}
         </div>
       </Frame>
     </AppProvider>
