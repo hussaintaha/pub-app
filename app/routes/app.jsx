@@ -13,22 +13,24 @@ import { authenticate } from "../shopify.server";
 import { useCallback, useEffect, useState } from "react";
 import { Frame, Loading } from "@shopify/polaris";
 import { RedirectionComponent } from "../components";
+import getFirstTimeBuyerSegment from "../utils/getFirstTimeBuyerSegment";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
-
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+  return {
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    appUrl: process.env.SHOPIFY_APP_URL || "",
+  };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { apiKey, appUrl } = useLoaderData();
   const [setupStatus, setSetupStatus] = useState(false);
+  const [segmentId, setSegmentId] = useState(null);
   const navigation = useNavigation();
   const isLoading = navigation.state !== "idle";
-
- 
 
   const loadingStyles = {
     opacity: isLoading ? 0.6 : 1,
@@ -59,6 +61,16 @@ export default function App() {
 
   console.log("setupStatus", setupStatus);
 
+    useEffect(() => {
+    const fetchSegmentId = async () => {
+      if (appUrl) {
+        const id = await getFirstTimeBuyerSegment(appUrl);
+        setSegmentId(id);
+      }
+    };
+    fetchSegmentId();
+  }, [appUrl]);
+
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <Frame>
@@ -75,11 +87,7 @@ export default function App() {
           )}
         </NavMenu>
         <div style={loadingStyles}>
-          {setupStatus ? (
-            <Outlet />
-          ) : (
-            <RedirectionComponent />
-          )}
+          {setupStatus ? <Outlet /> : <RedirectionComponent />}
         </div>
       </Frame>
     </AppProvider>

@@ -1,102 +1,152 @@
-export const APPSUBSCRIPTIONCRAETEMUTATION = ` #graphql
-  mutation AppSubscriptionCreate($name: String!, $lineItems: [AppSubscriptionLineItemInput!]!, $returnUrl: URL!, $test: Boolean!) {
-    appSubscriptionCreate(name: $name, returnUrl: $returnUrl, lineItems: $lineItems, test: $test) {
-      userErrors {
-        field
-        message
-      }
-      appSubscription {
-        id
-        test
-      }
-      confirmationUrl
-    }
-  }`
-
-export const  CREATE_DISCOUNT_CODE_MUTATUTION = `mutation CreateDiscountCode($basicCodeDiscount: DiscountCodeBasicInput!) {
+export const DISCOUNT_CODE_BASIC = `
+mutation discountCodeBasicCreate($basicCodeDiscount: DiscountCodeBasicInput!) {
   discountCodeBasicCreate(basicCodeDiscount: $basicCodeDiscount) {
-    codeDiscountNode {
-      id
+    codeDiscountNode { 
+      id 
       codeDiscount {
         ... on DiscountCodeBasic {
           title
+          codes(first: 1) {
+            nodes {
+              code
+            }
+          }
+          status
           startsAt
           endsAt
-          codes(first:10){
-            edges{
-              node{
-                asyncUsageCount
-                code
-              }
-            }
-          }
-          customerSelection {
-            ... on DiscountCustomers {
-              customers {
-                id
-              }
-            }
-          }
-          customerGets {
-            value {
-              ... on DiscountPercentage {
-                percentage
-              }
-            }
-          }
+          summary
         }
       }
     }
-    userErrors {
-      field
-      message
+    userErrors { 
+      field 
+      message 
+      code
     }
   }
-}`
+}`;
 
-export const DISCOUNT_AUTOMATIC_BASIC_CREATE = `mutation discountAutomaticBasicCreate($automaticBasicDiscount: DiscountAutomaticBasicInput!) {
-      discountAutomaticBasicCreate(automaticBasicDiscount: $automaticBasicDiscount) {
-        automaticDiscountNode {
-          id
-          automaticDiscount {
-            ... on DiscountAutomaticBasic {
-              title
-              startsAt
-              combinesWith {
-                productDiscounts
-                shippingDiscounts
-                orderDiscounts
-              }
-              minimumRequirement {
-                ... on DiscountMinimumSubtotal {
-                  greaterThanOrEqualToSubtotal {
-                    amount
-                    currencyCode
-                  }
-                }
-              }
-              customerGets {
-                value {
-                  ... on DiscountAmount {
-                    amount {
-                      amount
-                      currencyCode
-                    }
-                  }
-                }
-                items {
-                  ... on AllDiscountItems {
-                    allItems
-                  }
-                }
-              }
-            }
-          }
-        }
-        userErrors {
-          field
-          code
-          message
+export const DISCOUNT_AUTOMATIC_BASIC = `
+mutation discountAutomaticBasicCreate($automaticBasicDiscount: DiscountAutomaticBasicInput!) {
+  discountAutomaticBasicCreate(automaticBasicDiscount: $automaticBasicDiscount) {
+    automaticDiscountNode { 
+      id 
+      automaticDiscount {
+        ... on DiscountAutomaticBasic {
+          title
+          status
+          startsAt
+          endsAt
+          summary
         }
       }
-    }`
+    }
+    userErrors { 
+      field 
+      message 
+      code
+    }
+  }
+}`;
+
+export const DISCOUNT_CODE_FREE_SHIP = `
+mutation discountCodeFreeShippingCreate($freeShippingCodeDiscount: DiscountCodeFreeShippingInput!) {
+  discountCodeFreeShippingCreate(freeShippingCodeDiscount: $freeShippingCodeDiscount) {
+    codeDiscountNode { 
+      id 
+      codeDiscount {
+        ... on DiscountCodeFreeShipping {
+          title
+          codes(first: 1) {
+            nodes {
+              code
+            }
+          }
+          status
+          startsAt
+          endsAt
+          summary
+        }
+      }
+    }
+    userErrors { 
+      field 
+      message 
+      code
+    }
+  }
+}`;
+
+export const DISCOUNT_AUTOMATIC_FREE_SHIP = `
+mutation discountAutomaticFreeShippingCreate($freeShippingAutomaticDiscount: DiscountAutomaticFreeShippingInput!) {
+  discountAutomaticFreeShippingCreate(freeShippingAutomaticDiscount: $freeShippingAutomaticDiscount) {
+    automaticDiscountNode { 
+      id 
+      automaticDiscount {
+        ... on DiscountAutomaticFreeShipping {
+          title
+          status
+          startsAt
+          endsAt
+          summary
+        }
+      }
+    }
+    userErrors { 
+      field 
+      message 
+      code
+    }
+  }
+}`;
+
+export const DISCOUNT_CODE_BXGY = `
+mutation discountCodeBxgyCreate($bxgyCodeDiscount: DiscountCodeBxgyInput!) {
+  discountCodeBxgyCreate(bxgyCodeDiscount: $bxgyCodeDiscount) {
+    codeDiscountNode { 
+      id 
+      codeDiscount {
+        ... on DiscountCodeBxgy {
+          title
+          codes(first: 1) {
+            nodes {
+              code
+            }
+          }
+          status
+          startsAt
+          endsAt
+          summary
+        }
+      }
+    }
+    userErrors { 
+      field 
+      message 
+      code
+    }
+  }
+}`;
+
+export const DISCOUNT_AUTOMATIC_BXGY = `
+mutation discountAutomaticBxgyCreate($bxgyAutomaticDiscount: DiscountAutomaticBxgyInput!) {
+  discountAutomaticBxgyCreate(bxgyAutomaticDiscount: $bxgyAutomaticDiscount) {
+    automaticDiscountNode { 
+      id 
+      automaticDiscount {
+        ... on DiscountAutomaticBxgy {
+          title
+          status
+          startsAt
+          endsAt
+          summary
+        }
+      }
+    }
+    userErrors { 
+      field 
+      message 
+      code
+    }
+  }
+}`;

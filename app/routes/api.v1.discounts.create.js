@@ -1,153 +1,98 @@
-import { buildDiscountPayload } from "../utils/discountStrategies"
-import ShopifySession from "../models/shopifySession.model"
+import { createAdminApiClient } from "@shopify/admin-api-client";
+import ShopifySession from "../models/shopifySession.model";
+import { apiVersion } from "../shopify.server";
+import DiscountHandlerFactory from "../handlers/DiscountHandlerFactory";
+import { DiscountNormalizer } from '../utils/DiscountNormalizer';
 
-export const loader = async ({ request }) => {
-    if (request.method === "OPTIONS") {
-        return new Response(null, {
-            status: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, User-Agent, X-Environment, X-Discount-Type, X-Trigger-Type, X-Store-Domain, Authorization',
-            }
-        })
+export async function action({ request }) {
+    if (request.method !== "POST") {
+        return new Response(
+            JSON.stringify({ success: false, error: "Method not allowed" }),
+            { status: 405 }
+        );
     }
-    return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), { status: 405 })
-}
 
-export const action = async ({ request }) => {
     try {
-        if (request.method !== "POST") {
-            return errorResponse("Method not allowed", 405);
+        const requestData = await request.json();
+        console.log("Discount create request received.");
+
+        let discountData, storeDomain;
+
+        if (requestData.discount_data && requestData.store_domain) {
+            discountData = requestData.discount_data;
+            storeDomain = requestData.store_domain;
+        } else if (requestData.incomingDiscountRequest) {
+            const { store_domain, discount_data } = requestData.incomingDiscountRequest;
+            discountData = discount_data;
+            storeDomain = store_domain;
+        } else {
+            throw new Error("Invalid request format. Expected discount_data and store_domain");
         }
 
-        const incomingData = await request.json()
-        if (!incomingData || Object.keys(incomingData).length === 0) {
-            return errorResponse("Provide all required fields", 400);
+        console.log(process.env.SHOPIFY_APP_URL);
+
+        const session = await ShopifySession.findOne({ shop: storeDomain });
+        if (!session?.accessToken) {
+            throw new Error("Missing session or access token");
         }
 
-        const { store_domain: shop } = incomingData?.metadata
-        const session = await ShopifySession.findOne({ shop })
-        if (!session) return errorResponse("Forbidden error", 403)
+        const admin = createAdminApiClient({
+            apiVersion: apiVersion,
+            accessToken: session.accessToken,
+            storeDomain: storeDomain,
+        });
 
-        const { discount_type } = incomingData.basic_settings
-        const { trigger_type } = incomingData.conditions
-
-        if (trigger_type === "code" && !incomingData.basic_settings.code) {
-            return errorResponse("Discount code is required.", 400)
-        }
-
-        let customerGets = {
-            items: {},
-            value: {},
-        };
-
-        const exceptionProductIds = Array.isArray(incomingData?.advanced?.exception_product_ids)
-            ? incomingData.advanced.exception_product_ids
-            : [];
-
-        const exceptionCollectionIds = Array.isArray(incomingData?.advanced?.exception_categories)
-            ? incomingData.advanced.exception_categories
-            : [];
-
-        const excludedProductIds = Array.isArray(incomingData?.guardrails?.excluded_products)
-            ? incomingData.guardrails.excluded_products
-            : [];
-
-        const excludedCollectionIds = Array.isArray(incomingData?.guardrails?.excluded_categories)
-            ? incomingData.guardrails.excluded_categories
-            : [];
-
-        const includedCollectionIds = Array.isArray(incomingData?.conditions?.product_category_filter)
-            ? incomingData.conditions.product_category_filter
-            : [];
-
-        const productsToRemove = [...new Set([...exceptionProductIds, ...excludedProductIds])];
-        const collectionsToRemove = [...new Set([...exceptionCollectionIds, ...excludedCollectionIds])];
-        const collectionsToAdd = [...new Set(includedCollectionIds)];
-
-        const items = {};
-
-        if (productsToRemove.length > 0) {
-            items.products = {
-                productsToRemove: productsToRemove.map(id => `gid://shopify/Product/${id}`),
-            };
-            items.all=false
-        }
-
-        if (collectionsToAdd.length > 0 || collectionsToRemove.length > 0) {
-            items.collections = {};
-
-            if (collectionsToAdd.length > 0) {
-                items.collections.add = collectionsToAdd.map(id => `gid://shopify/Collection/${id}`);
+        const query = `
+        query GetSegments {
+            segments(first: 10) {
+            edges {
+                node {
+                id
+                name
+                query
+                }
             }
-
-            if (collectionsToRemove.length > 0) {
-                items.collections.remove = collectionsToRemove.map(id => `gid://shopify/Collection/${id}`);
-            }
-
-            if (Object.keys(items.collections).length === 0) {
-                delete items.collections;
             }
         }
+        `;
 
-        const hasValidItems =
-            items.products?.productsToRemove?.length > 0 ||
-            items.collections?.add?.length > 0 ||
-            items.collections?.remove?.length > 0;
+        const response = await admin.fetch(query);
+        const segmentData = await response.json();
 
-        customerGets.items = hasValidItems ? items : { all: true };
+        const segment = segmentData?.data?.segments?.edges?.find(edge =>
+            edge.node.name.toLowerCase().includes("haven't purchased") ||
+            edge.node.name.toLowerCase().includes("first time")
+        );
 
-        customerGets.value = discount_type?.includes('percentage')
-            ? { percentage: incomingData?.basic_settings?.discount_value / 100 }
-            : { amount: incomingData?.basic_settings?.discount_value };
+        const segment_id = segment?.node?.id
 
-        const { mutation, variables } = buildDiscountPayload({
-            discount_type,
-            trigger_type,
-            customer_gets: customerGets,
-            basic: incomingData.basic_settings,
-            conditions: incomingData.conditions,
-            advanced: incomingData.advanced,
-            guardrails: incomingData.guardrails
-        })
 
-        console.log(JSON.stringify(variables, null, 10));
-        console.log('mutation: ', mutation);
+        discountData.discount_type = DiscountNormalizer.normalizeDiscountType(discountData.discount_type);
+        discountData.trigger_type = DiscountNormalizer.normalizeTriggerType(discountData.trigger_type);
 
-        const res = await fetch(`https://${session.shop}/admin/api/2025-04/graphql.json`, {
-            method: "POST",
-            body: JSON.stringify({ query: mutation, variables }),
-            headers: {
-                "X-Shopify-Access-Token": session.accessToken,
-                "Content-Type": "application/json"
-            }
-        })
+        const handler = DiscountHandlerFactory.createHandler(
+            discountData.discount_type,
+            discountData.trigger_type
+        );
 
-        const data = await res.json()
-        console.log("Shopify Response:", JSON.stringify(data, null, 2))
+        handler.validate(discountData);
+        const input = handler.buildInput({ ...discountData, segment_id });
+        console.log('input: 000000000000000000000000000000', JSON.stringify(input, null, 2));
 
-        return successResponse("Discount created successfully", 201)
+        const result = await handler.createDiscount(admin, input);
 
-    } catch (error) {
-        console.error("Error creating discount:", error)
-        return errorResponse("Internal server error", 500)
+        return new Response(
+            JSON.stringify({
+                success: true,
+                ...result
+            }),
+            { status: 201 }
+        );
+    } catch (err) {
+        console.error("Discount API error:", err);
+        return new Response(
+            JSON.stringify({ success: false, error: err.message }),
+            { status: 500 }
+        );
     }
 }
-
-const successResponse = (message, status = 200) => new Response(JSON.stringify({ success: true, message }), {
-    status,
-    headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-    }
-})
-
-const errorResponse = (error, status = 500) => new Response(JSON.stringify({ success: false, error }), {
-    status,
-    headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-    }
-})
-
