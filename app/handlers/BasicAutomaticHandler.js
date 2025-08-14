@@ -13,12 +13,12 @@ export default class BasicAutomaticHandler extends BaseDiscountHandler {
 
   validate(data) {
     super.validate(data);
-    
+
     // Required fields validation according to Shopify's DiscountAutomaticBasicInput
     const requiredFields = [
       'rule_name', 'discount_type', 'value', 'start_date', 'product_selection'
     ];
-    
+
     requiredFields.forEach(field => {
       if (!data[field]) {
         throw new Error(`Field '${field}' is required`);
@@ -95,8 +95,8 @@ export default class BasicAutomaticHandler extends BaseDiscountHandler {
   buildDiscountValue(data) {
     // Build according to DiscountCustomerGetsValueInput schema
     if (data.discount_type === 'PERCENTAGE_OFF' || data.discount_type === 'percentage') {
-      return { 
-        percentage: parseFloat(data.value) / 100 
+      return {
+        percentage: parseFloat(data.value) / 100
       };
     } else {
       // For fixed amount discounts, appliesOnEachItem is REQUIRED
@@ -113,12 +113,12 @@ export default class BasicAutomaticHandler extends BaseDiscountHandler {
     // Based on Shopify documentation:
     // - true: discount applies to each item individually (e.g., $10 off each item)
     // - false: discount applies proportionally across all items (e.g., $50 off total cart)
-    
+
     // If explicitly specified in data, use that value
     if (data.applies_on_each_item !== undefined) {
       return Boolean(data.applies_on_each_item);
     }
-    
+
     // Default behavior based on product selection:
     // - For specific products: typically applies to each item
     // - For all products: typically applies proportionally to total
@@ -131,17 +131,18 @@ export default class BasicAutomaticHandler extends BaseDiscountHandler {
 
   buildItemSelection(data) {
     // Build according to DiscountItemsInput schema
-    switch(data.product_selection) {
+    switch (data.product_selection) {
       case 'specific_products':
         return {
           products: {
             productsToAdd: data.product_ids.map(id => this.normalizeId(id, 'Product'))
           }
         };
+
       case 'specific_collections':
         return {
           collections: {
-            collectionsToAdd: data.collection_ids.map(id => this.normalizeId(id, 'Collection'))
+            add: data.collection_ids.map(id => this.normalizeId(id, 'Collection'))
           }
         };
       case 'all_products':
@@ -160,7 +161,7 @@ export default class BasicAutomaticHandler extends BaseDiscountHandler {
     // Build according to DiscountMinimumRequirementInput schema
     const minAmount = data.minimum_order || data.conditions?.minimum_cart_value;
     if (!minAmount) return null;
-    
+
     return {
       subtotal: {
         greaterThanOrEqualToSubtotal: parseFloat(minAmount).toString()
