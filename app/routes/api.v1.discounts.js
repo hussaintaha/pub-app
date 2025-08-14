@@ -8,7 +8,7 @@ export const action = async ({ request }) => {
         const incomingDiscountRequest = await request.json()
         console.log('incomingDiscountRequest: ', JSON.stringify(incomingDiscountRequest,null, 2));
 
-        const response = await fetch(`${process.env.SHOPIFY_APP_URL}/api/v1/discounts/create`, { method: 'POST', body: JSON.stringify({incomingDiscountRequest}) })
+        const response = await fetch(`${process.env.SHOPIFY_APP_URL}api/v1/discounts/create`, { method: 'POST', body: JSON.stringify({incomingDiscountRequest}) })
 
         const data = await response.json()
 
