@@ -64,7 +64,7 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
         }
     }
 
-    buildInput(data) {
+     buildInput(data) {
         try {
 
             // Validate required fields
@@ -114,18 +114,20 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
             // Handle code-specific fields
             if (this.triggerType === 'DISCOUNT_CODE') {
                 baseInput.code = data.discount_code.trim();
-            }
-            // Only add customerSelection for code discounts
-            baseInput.customerSelection = {
-                customerSegments: {
-                    add: [data.segment_id.startsWith('gid://')
-                        ? data.segment_id
-                        : `gid://shopify/Segment/${data.segment_id}`]
-                }
-            };
 
-            // Only add appliesOncePerCustomer for code discounts
-            baseInput.appliesOncePerCustomer = Boolean(data.customer_limit === 1 || data.customer_limit === true);
+                // Only add customerSelection for code discounts
+                baseInput.customerSelection = {
+                    customerSegments: {
+                        add: [data.segment_id.startsWith('gid://')
+                            ? data.segment_id
+                            : `gid://shopify/Segment/${data.segment_id}`]
+                    }
+                };
+
+                // Only add appliesOncePerCustomer for code discounts
+                baseInput.appliesOncePerCustomer = Boolean(data.customer_limit === 1 || data.customer_limit === true);
+
+            } 
             return baseInput;
 
         } catch (error) {
