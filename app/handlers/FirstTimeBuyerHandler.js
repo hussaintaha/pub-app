@@ -7,6 +7,7 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
     constructor(triggerType) {
         super();
         try {
+
             this.triggerType = triggerType;
 
             if (!['DISCOUNT_CODE', 'AUTOMATIC'].includes(triggerType)) {
@@ -20,15 +21,17 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
                 ? 'basicCodeDiscount'
                 : 'automaticBasicDiscount';
 
-        } catch (error) {
-            console.error('FirstTimeBuyerHandler: constructor error: ', error);
-            throw error;
+        }
+        catch (error) {
+            console.log('FirstTimeBuyerHandler: constructor error: ', error);
         }
     }
 
     async validate(data) {
+        super.validate(data);
+
         try {
-            super.validate(data);
+
             const errors = [];
 
             if (!data?.rule_name?.trim()) {
@@ -53,17 +56,17 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
             }
 
             if (errors.length > 0) {
-                throw new Error(`Validation failed: ${errors.join(', ')}`);
+                console.log(`Validation failed: ${errors.join(', ')}`);
             }
 
         } catch (error) {
-            console.error('FirstTimeBuyerHandler: Validation error: ', error);
-            throw error;
+            console.log('FirstTimeBuyerHandler: Validation error: ', error);
         }
     }
 
     buildInput(data) {
         try {
+
             // Validate required fields
             if (!data?.rule_name?.trim()) {
                 throw new Error("Rule name is required");
@@ -88,8 +91,8 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
 
             // Validate and format discount value
             const discountValue = parseFloat(data.value);
-            if (isNaN(discountValue) || discountValue <= 0 || discountValue > 100) {
-                throw new Error("Discount value must be a positive number between 0 and 100");
+            if (isNaN(discountValue) || discountValue <= 0) {
+                throw new Error("Discount value must be a positive number");
             }
 
             const baseInput = {
@@ -107,40 +110,26 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
                 combinesWith: this.buildCombinesWith(data)
             };
 
+            console.log('data.segment_id: ', data.segment_id);
             // Handle code-specific fields
             if (this.triggerType === 'DISCOUNT_CODE') {
-                if (!data.discount_code?.trim()) {
-                    throw new Error("Discount code is required for code-based discounts");
-                }
                 baseInput.code = data.discount_code.trim();
-
-                if (!data.segment_id) {
-                    throw new Error("Customer segment ID is required for first-time buyer code discounts");
-                }
-
-                baseInput.customerSelection = {
-                    customerSegments: {
-                        add: [data.segment_id.startsWith('gid://')
-                            ? data.segment_id
-                            : `gid://shopify/Segment/${data.segment_id}`]
-                    }
-                };
-
-                baseInput.appliesOncePerCustomer = Boolean(data.customer_limit === 1 || data.customer_limit === true);
-            } else {
-                // Automatic discount specific fields
-                baseInput.customerSelection = {
-                    customerSegments: {
-                        add: [data.segment_id || 'gid://shopify/Segment/first-time-buyers']
-                    }
-                };
             }
+            // Only add customerSelection for code discounts
+            baseInput.customerSelection = {
+                customerSegments: {
+                    add: [data.segment_id.startsWith('gid://')
+                        ? data.segment_id
+                        : `gid://shopify/Segment/${data.segment_id}`]
+                }
+            };
 
+            // Only add appliesOncePerCustomer for code discounts
+            baseInput.appliesOncePerCustomer = Boolean(data.customer_limit === 1 || data.customer_limit === true);
             return baseInput;
 
         } catch (error) {
-            console.error('FirstTimeBuyerHandler: buildInput error: ', error);
-            throw error;
+            console.log('FirstTimeBuyerHandler: buildInput error: ', error);
         }
     }
 
@@ -229,8 +218,7 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
                 type: this.triggerType === 'DISCOUNT_CODE' ? 'CODE' : 'AUTOMATIC'
             };
         } catch (error) {
-            console.error('FirstTimeBuyerHandler: handleResponse error: ', error);
-            throw error;
+            console.log('FirstTimeBuyerHandler: handleResponse error: ', error);
         }
     }
 }
