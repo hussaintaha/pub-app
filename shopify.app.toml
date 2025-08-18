@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "3d6a68448cee853b452747edd61c7704"
+name = "cartia-live"
+handle = "cartia-live"
+application_url = "https://nodea.amkwebsolutions.com/"
+embedded = true
+
+[webhooks]
+api_version = "2025-04"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_themes,write_discounts,write_products"
+
+[auth]
+redirect_urls = [
+  "https://nodea.amkwebsolutions.com/auth/callback",
+  "https://nodea.amkwebsolutions.com/auth/shopify/callback",
+  "https://nodea.amkwebsolutions.com/api/auth/callback"
+]
+
+[app_proxy]
+url = "https://nodea.amkwebsolutions.com/"
+subpath = "public"
+prefix = "apps"
+
+[pos]
+embedded = false
