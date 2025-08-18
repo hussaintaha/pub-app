@@ -57,6 +57,7 @@ export async function action({ request }) {
         `;
 
         const response = await admin.fetch(query);
+        console.log('response: ', JSON.stringify(response, null, 2));
         const segmentData = await response.json();
 
         console.log('segmentData: ----------------------', JSON.stringify(segmentData, null, 2));
