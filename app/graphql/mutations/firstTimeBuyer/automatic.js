@@ -1,34 +1,22 @@
 export const DISCOUNT_AUTOMATIC_FIRST_TIME_BUYER = `
-  mutation discountAutomaticAppCreate($automaticAppDiscount: DiscountAutomaticAppInput!) {
-    discountAutomaticAppCreate(automaticAppDiscount: $automaticAppDiscount) {
+  mutation discountAutomaticBasicCreate($automaticBasicDiscount: DiscountAutomaticBasicInput!) {
+    discountAutomaticBasicCreate(automaticBasicDiscount: $automaticBasicDiscount) {
       automaticDiscountNode {
         id
         automaticDiscount {
-          ... on DiscountAutomaticApp {
+          ... on DiscountAutomaticBasic {
             title
             status
             startsAt
             endsAt
-            customerGets {
-              value {
-                ... on DiscountPercentage {
-                  percentage
-                }
-              }
-              items {
-                ... on AllDiscountItems {
-                  allItems
-                }
-              }
-            }
             customerSelection {
-              ... on DiscountCustomerSegments {
-                segments {
-                  id
-                  name
-                }
+            ... on DiscountCustomerSegments {
+              segments {
+                id
+                name
               }
             }
+          }
           }
         }
       }
