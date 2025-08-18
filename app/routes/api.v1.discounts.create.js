@@ -59,7 +59,7 @@ export async function action({ request }) {
         const response = await admin.fetch(query);
         const segmentData = await response.json();
 
-        console.log('segmentData: ----------------------', segmentData);
+        console.log('segmentData: ----------------------', JSON.stringify(segmentData, null, 2));
 
         const segment = segmentData?.data?.segments?.edges?.find(edge =>
             edge.node.name.toLowerCase().includes("haven't purchased") ||
