@@ -1,3 +1,4 @@
+import { error } from 'console';
 import { authenticate } from '../shopify.server'
 
 export const loader = async ({ request }) => {
@@ -27,10 +28,18 @@ export const loader = async ({ request }) => {
     const data = await response.json();
     console.log('data: ----------------------', data);
 
+    if (!data?.data?.segments?.edges) {
+       return new Response(JSON.stringify({ success: false, error: "Segments not found." }), { status: 404 });
+    }
+
     const segment = data?.data?.segments?.edges?.find(edge =>
       edge.node.name.toLowerCase().includes("haven't purchased") ||
       edge.node.name.toLowerCase().includes("first time")
     );
+
+    if (!segment) {
+      return new Response(JSON.stringify({ success: false, error: "Segment not found." }), { status: 404 });
+    }
 
     return new Response(JSON.stringify({ success: true, segment_id: segment?.node?.id }), { status: 200 });
 
