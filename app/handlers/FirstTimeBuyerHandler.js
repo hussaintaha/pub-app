@@ -1,3 +1,4 @@
+// handlers/FirstTimeBuyerHandler.js
 import BaseDiscountHandler from './BaseDiscountHandler';
 import { DISCOUNT_CODE_FIRST_TIME_BUYER } from '../graphql/mutations/firstTimeBuyer/code';
 import { DISCOUNT_AUTOMATIC_FIRST_TIME_BUYER } from '../graphql/mutations/firstTimeBuyer/automatic';
@@ -27,117 +28,112 @@ export default class FirstTimeBuyerHandler extends BaseDiscountHandler {
     }
 
     async validate(data) {
-    super.validate(data);
+        super.validate(data);
 
-    try {
-        const errors = [];
+        try {
 
-        if (!data?.rule_name?.trim()) {
-            errors.push("Rule name is required");
-        }
+            const errors = [];
 
-        if (data.value === undefined || data.value === null) {
-            errors.push("Discount value is required");
-        } else if (isNaN(data.value) || data.value < 0 || data.value > 100) {
-            errors.push("Percentage value must be between 0 and 100");
-        } else if (data.value === 0) {
-            errors.push("Discount value cannot be 0%");
-        }
-
-        // Required for both types now
-        if (!data?.segment_id?.trim()) {
-            errors.push("Customer segment ID is required for first-time buyer discounts");
-        }
-
-        if (this.triggerType === 'DISCOUNT_CODE') {
-            if (!data?.discount_code?.trim()) {
-                errors.push("Discount code is required for code-based discounts");
+            if (!data?.rule_name?.trim()) {
+                errors.push("Rule name is required");
             }
-        }
 
-        if (errors.length > 0) {
-            console.log(`Validation failed: ${errors.join(', ')}`);
-            throw new Error(errors.join(', '));
-        }
-
-    } catch (error) {
-        console.log('FirstTimeBuyerHandler: Validation error: ', error);
-        throw error;
-    }
-}
-
-     buildInput(data) {
-    try {
-        // Validate required fields
-        if (!data?.rule_name?.trim()) {
-            throw new Error("Rule name is required");
-        }
-
-        // Validate and parse dates
-        const startsAt = new Date(data.start_date);
-        if (isNaN(startsAt.getTime())) {
-            throw new Error("Invalid start date");
-        }
-
-        let endsAt = null;
-        if (data.end_date) {
-            endsAt = new Date(data.end_date);
-            if (isNaN(endsAt.getTime())) {
-                throw new Error("Invalid end date");
+            if (data.value === undefined || data.value === null) {
+                errors.push("Discount value is required");
+            } else if (isNaN(data.value) || data.value < 0 || data.value > 100) {
+                errors.push("Percentage value must be between 0 and 100");
+            } else if (data.value === 0) {
+                errors.push("Discount value cannot be 0%");
             }
-            if (endsAt <= startsAt) {
-                throw new Error("End date must be after start date");
-            }
-        }
 
-        // Validate and format discount value
-        const discountValue = parseFloat(data.value);
-        if (isNaN(discountValue) || discountValue <= 0) {
-            throw new Error("Discount value must be a positive number");
-        }
-
-        // Validate segment ID for both types
-        if (!data?.segment_id?.trim()) {
-            throw new Error("Customer segment ID is required for first-time buyer discounts");
-        }
-
-        const baseInput = {
-            title: data.rule_name.trim(),
-            startsAt: startsAt.toISOString(),
-            endsAt: endsAt?.toISOString() || null,
-            customerGets: {
-                value: {
-                    percentage: Math.min(1, Math.max(0.01, discountValue / 100))
-                },
-                items: {
-                    all: true
+            if (this.triggerType === 'DISCOUNT_CODE') {
+                if (!data?.discount_code?.trim()) {
+                    errors.push("Discount code is required for code-based discounts");
                 }
-            },
-            combinesWith: this.buildCombinesWith(data),
-            // Add customer selection for both types
-            customerSelection: {
+            }
+
+            if (!data?.segment_id?.trim()) {
+                errors.push("Customer segment ID is required for first-time buyer discounts");
+            }
+
+            if (errors.length > 0) {
+                console.log(`Validation failed: ${errors.join(', ')}`);
+            }
+
+        } catch (error) {
+            console.log('FirstTimeBuyerHandler: Validation error: ', error);
+        }
+    }
+
+    buildInput(data) {
+        try {
+
+            // Validate required fields
+            if (!data?.rule_name?.trim()) {
+                throw new Error("Rule name is required");
+            }
+
+            // Validate and parse dates
+            const startsAt = new Date(data.start_date);
+            if (isNaN(startsAt.getTime())) {
+                throw new Error("Invalid start date");
+            }
+
+            let endsAt = null;
+            if (data.end_date) {
+                endsAt = new Date(data.end_date);
+                if (isNaN(endsAt.getTime())) {
+                    throw new Error("Invalid end date");
+                }
+                if (endsAt <= startsAt) {
+                    throw new Error("End date must be after start date");
+                }
+            }
+
+            // Validate and format discount value
+            const discountValue = parseFloat(data.value);
+            if (isNaN(discountValue) || discountValue <= 0) {
+                throw new Error("Discount value must be a positive number");
+            }
+
+            const baseInput = {
+                title: data.rule_name.trim(),
+                startsAt: startsAt.toISOString(),
+                endsAt: endsAt?.toISOString() || null,
+                customerGets: {
+                    value: {
+                        percentage: Math.min(1, Math.max(0.01, discountValue / 100)) // Ensure between 1-100%
+                    },
+                    items: {
+                        all: true
+                    }
+                },
+                combinesWith: this.buildCombinesWith(data)
+            };
+
+            console.log('data.segment_id: ', data.segment_id);
+            // Handle code-specific fields
+            if (this.triggerType === 'DISCOUNT_CODE') {
+                baseInput.code = data.discount_code.trim();
+            }
+
+            // Only add customerSelection for code discounts
+            baseInput.customerSelection = {
                 customerSegments: {
                     add: [data.segment_id.startsWith('gid://')
                         ? data.segment_id
                         : `gid://shopify/Segment/${data.segment_id}`]
                 }
-            }
-        };
+            };
 
-        // Handle code-specific fields
-        if (this.triggerType === 'DISCOUNT_CODE') {
-            baseInput.code = data.discount_code.trim();
             // Only add appliesOncePerCustomer for code discounts
             baseInput.appliesOncePerCustomer = Boolean(data.customer_limit === 1 || data.customer_limit === true);
-        } 
-        
-        return baseInput;
+            return baseInput;
 
-    } catch (error) {
-        console.log('FirstTimeBuyerHandler: buildInput error: ', error);
-        throw error; // Re-throw to ensure calling code knows about the error
+        } catch (error) {
+            console.log('FirstTimeBuyerHandler: buildInput error: ', error);
+        }
     }
-}
 
     buildCombinesWith(data) {
         const stackingAllowed = data.stacking_policy === "allow_stacking" ||

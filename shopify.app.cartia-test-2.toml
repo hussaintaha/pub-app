@@ -1,0 +1,27 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "9527059dfe1f0744e6e9607a34e28e66"
+name = "cartia-test-2"
+handle = "cartia-test-2"
+application_url = "https://collectables-om-difference-vsnet.trycloudflare.com"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+
+[webhooks]
+api_version = "2025-07"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products,read_themes,write_discounts,write_products"
+
+[auth]
+redirect_urls = [
+  "https://collectables-om-difference-vsnet.trycloudflare.com/auth/callback",
+  "https://collectables-om-difference-vsnet.trycloudflare.com/auth/shopify/callback",
+  "https://collectables-om-difference-vsnet.trycloudflare.com/api/auth/callback"
+]
+
+[pos]
+embedded = false
