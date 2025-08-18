@@ -59,12 +59,15 @@ export async function action({ request }) {
         const response = await admin.fetch(query);
         const segmentData = await response.json();
 
+        console.log('segmentData: ----------------------', segmentData);
+
         const segment = segmentData?.data?.segments?.edges?.find(edge =>
             edge.node.name.toLowerCase().includes("haven't purchased") ||
             edge.node.name.toLowerCase().includes("first time")
         );
 
         const segment_id = segment?.node?.id
+        console.log('segment_id: ', segment_id);
 
 
         discountData.discount_type = DiscountNormalizer.normalizeDiscountType(discountData.discount_type);
