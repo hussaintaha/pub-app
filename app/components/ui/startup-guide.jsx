@@ -51,7 +51,7 @@ const StartupGuide = () => {
                 <LayoutDashboard size={20} color="#5c6ac4" />
                 <BlockStack gap="100">
                   <Text variant="headingMd" as="h2">
-                    Setup cartia ai
+                    Cartia AI Setup Guide
                   </Text>
                   <Text as="p" variant="bodyMd">
                     Learn how to configure and enable Cartia AI for your Shopify
