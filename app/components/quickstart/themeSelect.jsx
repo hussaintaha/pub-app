@@ -94,13 +94,24 @@ const ThemeSelect = () => {
                       Enable in Theme Editor
                     </Button>
                   </InlineStack>
-
                   {error && (
                     <InlineError message={error} fieldID="theme-select" />
                   )}
                 </BlockStack>
               </FormLayout>
             </Form>
+            <div style={{ marginTop: "16px", marginBottom: "16px", width: "52%"}}>
+                    <img
+                    src="/images/embed-on.png"
+                    alt="Embed on Shopify"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      borderRadius: "8px",
+                      boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                </div>
           </Card>
         </div>
       )}

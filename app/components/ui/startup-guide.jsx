@@ -8,7 +8,7 @@ import {
   TextContainer,
   Banner,
 } from "@shopify/polaris";
-import { CreditCard, Rocket } from "lucide-react";
+import { CreditCard, Rocket, LayoutDashboard } from "lucide-react";
 
 const StartupGuide = () => {
   return (
@@ -23,7 +23,7 @@ const StartupGuide = () => {
               The Cartia app will only start working after you log in and
               complete the setup in the{" "}
               <a
-                href="https://dashboard.cartia.ai"
+                href="https://preview--cartia2.lovable.app/register"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -48,10 +48,33 @@ const StartupGuide = () => {
             {/* quick setup */}
             <InlineStack gap="300" align="space-between" blockAlign="center">
               <InlineStack gap="300" blockAlign="center">
-                <Rocket size={20} color="#5c6ac4" />
+                <LayoutDashboard size={20} color="#5c6ac4" />
                 <BlockStack gap="100">
                   <Text variant="headingMd" as="h2">
                     Setup cartia ai
+                  </Text>
+                  <Text as="p" variant="bodyMd">
+                    Learn how to configure and enable Cartia AI for your Shopify
+                    store via the Cartia dashboard.
+                  </Text>
+                </BlockStack>
+              </InlineStack>
+              <Button variant="primary" url="/app/cartia-dashboard-setup">
+                Setup Cartia AI Agent
+              </Button>
+            </InlineStack>
+          </BlockStack>
+          <div style={{ margin: "16px" }}>
+            <Divider />
+          </div>
+          <BlockStack gap="400">
+            {/* quick setup */}
+            <InlineStack gap="300" align="space-between" blockAlign="center">
+              <InlineStack gap="300" blockAlign="center">
+                <Rocket size={20} color="#5c6ac4" />
+                <BlockStack gap="100">
+                  <Text variant="headingMd" as="h2">
+                    Setup cartia app
                   </Text>
                   <Text as="p" variant="bodyMd">
                     Follow our step-by-step guide to enable cartia ai on your
@@ -60,7 +83,7 @@ const StartupGuide = () => {
                 </BlockStack>
               </InlineStack>
               <Button variant="primary" url="/app/quickstart">
-                Quickstart
+                Enable Cartia AI Agent
               </Button>
             </InlineStack>
           </BlockStack>

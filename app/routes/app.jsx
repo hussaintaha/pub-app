@@ -59,7 +59,6 @@ export default function App() {
     fetchAgentSetupStatus();
   }, [fetchAgentSetupStatus]);
 
-  console.log("setupStatus", setupStatus);
 
     useEffect(() => {
     const fetchSegmentId = async () => {

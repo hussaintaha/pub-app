@@ -64,7 +64,7 @@ const QuickstartStep = ({
                     </Button>
                   )}
                   {isLastStep ? (
-                    <Button variant="primary" url={setupCompleted ? "/app" :"" }>
+                    <Button target="_blank" external variant="primary" url={setupCompleted ? "https://your-cartia-dashboard-url.com" :"https://your-cartia-dashboard-url.com" }>
                       Finish
                     </Button>
                   ) : (
